@@ -1,5 +1,7 @@
 package com.jackie.imoocnews;
 
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -20,18 +22,17 @@ import java.util.Map;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
-    private ListView mListView;
-    private SimpleAdapter mSimpleAdapter;
-    //private List<Map<String, Object>> list;
-    private List<NewsBean> dataList;
-
+    public ListView mListView;
+    public List<NewsBean> dataList;
+    public NewsAdapter newsAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mListView = (ListView) findViewById(R.id.lvMain);
-        //list = new ArrayList<Map<String, Object>>();
         dataList = new ArrayList<NewsBean>();
+        newsAdapter = new NewsAdapter(MainActivity.this, dataList);
+        mListView.setAdapter(newsAdapter);
         AsyncHttpClient asyncHttpClient = new AsyncHttpClient("http://www.imooc.com/api/teacher?type=4&num=30");
         asyncHttpClient.get(new JSONObjectResponseHandler() {
             @Override
@@ -48,31 +49,20 @@ public class MainActivity extends AppCompatActivity {
                         String picBig = obj.getString("picBig");
                         String description = obj.getString("description");
                         String learner = obj.getString("learner");
-                        //Log.d("jackie", "--------------------------" + i + "----------------------------------");
-                        //Log.d("jackie", id + "\n" + name + "\n" + picSmall + "\n" + picBig + "\n" + description + "\n" + learner);
-//                        Map<String, Object> map = new HashMap<String, Object>();
-//                        map.put("name", name);
-//                        map.put("description", description);
-//                        list.add(map);
                         NewsBean newsBean = new NewsBean(picSmall, name, description);
                         dataList.add(newsBean);
                     }
 
-
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+            }
 
+            @Override
+            public void onFinish() {
+                newsAdapter.notifyDataSetChanged();
             }
         });
-        //SimpleAdapter用于显示简单的列表内容还不错，不过使用图片就比较麻烦
-//        mSimpleAdapter = new SimpleAdapter(
-//                MainActivity.this, list,
-//                R.layout.layout_item,
-//                new String[]{"name", "description"},
-//                new int[]{R.id.tvTitle, R.id.tvContent});
-//        mListView.setAdapter(mSimpleAdapter);
-        NewsAdapter newsAdapter = new NewsAdapter(MainActivity.this, dataList);
-        mListView.setAdapter(newsAdapter);
+
     }
 }
