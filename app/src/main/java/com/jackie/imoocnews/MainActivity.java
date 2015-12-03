@@ -31,8 +31,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         mListView = (ListView) findViewById(R.id.lvMain);
         dataList = new ArrayList<NewsBean>();
-        newsAdapter = new NewsAdapter(MainActivity.this, dataList);
-        mListView.setAdapter(newsAdapter);
+
         AsyncHttpClient asyncHttpClient = new AsyncHttpClient("http://www.imooc.com/api/teacher?type=4&num=30");
         asyncHttpClient.get(new JSONObjectResponseHandler() {
             @Override
@@ -60,7 +59,8 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onFinish() {
-                newsAdapter.notifyDataSetChanged();
+                newsAdapter = new NewsAdapter(MainActivity.this, dataList);
+                mListView.setAdapter(newsAdapter);
             }
         });
 
