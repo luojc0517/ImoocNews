@@ -25,6 +25,7 @@ public class MainActivity extends AppCompatActivity {
     public ListView mListView;
     public List<NewsBean> dataList;
     public NewsAdapter newsAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,9 +35,15 @@ public class MainActivity extends AppCompatActivity {
 
         AsyncHttpClient asyncHttpClient = new AsyncHttpClient("http://www.imooc.com/api/teacher?type=4&num=30");
         asyncHttpClient.get(new JSONObjectResponseHandler() {
+
+
             @Override
             public void onSuccess() {
 
+            }
+
+            @Override
+            public void onFinish() {
                 JSONObject jsonObject = getContent();
                 try {
                     JSONArray data = jsonObject.getJSONArray("data");
@@ -55,10 +62,6 @@ public class MainActivity extends AppCompatActivity {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-            }
-
-            @Override
-            public void onFinish() {
                 newsAdapter = new NewsAdapter(MainActivity.this, dataList);
                 mListView.setAdapter(newsAdapter);
             }
