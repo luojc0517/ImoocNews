@@ -16,41 +16,46 @@ import net.callumtaylor.asynchttp.response.BitmapResponseHandler;
  */
 public class ImageLoader {
     private LruCache<String, Bitmap> bitmapLruCache;
-    private ImageView mImageView;
-    private String mUrl;
-    private Bitmap mBitmap;
 
-    public ImageLoader(LruCache<String, Bitmap> LruCache) {
-        bitmapLruCache = LruCache;
+    public ImageLoader() {
+        //获取最大内存
+        int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
+        //获取可用与图片缓存的内存
+        int cacheSize = maxMemory / 4;
+        bitmapLruCache = new LruCache<String, Bitmap>(cacheSize) {
+            @Override
+            protected int sizeOf(String key, Bitmap value) {
+                return value.getByteCount() / 1024;
+            }
+        };
     }
 
-    public void loadImage(ImageView imageView, String Url) {
-        mImageView = imageView;
-        mUrl = Url;
-        mBitmap = getBitmapFromCache(mUrl);
-        if (mBitmap == null) {
-            Log.d("jackie", "从网络获取图片" + mUrl);
-            AsyncHttpClient asyncHttpClient = new AsyncHttpClient(mUrl);
+    public void loadImage(final ImageView imageView, final String Url) {
+        Bitmap bitmap = getBitmapFromCache(Url);
+        if (bitmap == null) {
+            Log.d("jackie", "从网络获取图片" + Url);
+            AsyncHttpClient asyncHttpClient = new AsyncHttpClient(Url);
             asyncHttpClient.get(new BitmapResponseHandler() {
+
                 @Override
                 public void onSuccess() {
-                    mBitmap = getContent();
+
                 }
 
                 @Override
                 public void onFinish() {
-                    if (mImageView.getTag().equals(mUrl)) {
-                        mImageView.setImageBitmap(mBitmap);
+                    if (imageView.getTag().equals(Url)) {
+                        imageView.setImageBitmap(getContent());
                     }
-                    addBitmapToCache(mUrl, mBitmap);
+                    addBitmapToCache(Url, getContent());
 
                 }
             });
         } else {
-            Log.d("jackie", "从缓存获取图片" + mUrl);
+            Log.d("jackie", "从缓存获取图片" + Url);
 
-            if (mImageView.getTag().equals(mUrl)) {
-                mImageView.setImageBitmap(mBitmap);
+            if (imageView.getTag().equals(Url)) {
+                imageView.setImageBitmap(bitmap);
             }
         }
 

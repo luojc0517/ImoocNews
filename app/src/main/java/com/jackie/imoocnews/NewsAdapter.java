@@ -24,24 +24,12 @@ import java.util.List;
 public class NewsAdapter extends BaseAdapter {
     private List<NewsBean> data;
     private Context context;
-    private AsyncHttpClient asyncHttpClient;
-    // private ImageLoader imageLoader = new ImageLoader();
-    LruCache<String, Bitmap> LruCache;
-
-
+    private ImageLoader imageLoader;
     public NewsAdapter(Context context, List<NewsBean> data) {
         this.context = context;
         this.data = data;
-        //获取最大内存
-        int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
-        //获取可用与图片缓存的内存
-        int cacheSize = maxMemory / 4;
-        LruCache = new LruCache<String, Bitmap>(cacheSize) {
-            @Override
-            protected int sizeOf(String key, Bitmap value) {
-                return value.getByteCount() / 1024;
-            }
-        };
+
+        imageLoader = new ImageLoader();
     }
 
     @Override
@@ -78,7 +66,6 @@ public class NewsAdapter extends BaseAdapter {
         viewHolder.ivIcon.setImageResource(R.mipmap.ic_launcher);
         //防止图片错位，给imageview设置url
         viewHolder.ivIcon.setTag(data.get(position).getNewsUrl());
-        ImageLoader imageLoader = new ImageLoader(LruCache);
         imageLoader.loadImage(viewHolder.ivIcon, data.get(position).getNewsUrl());
         viewHolder.tvTitle.setText(data.get(position).getNewsTitle());
         viewHolder.tvContent.setText(data.get(position).getNewsContent());
