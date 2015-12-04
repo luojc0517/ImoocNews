@@ -1,12 +1,8 @@
 package com.jackie.imoocnews;
 
-import android.os.Handler;
-import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
 
 import net.callumtaylor.asynchttp.AsyncHttpClient;
 import net.callumtaylor.asynchttp.response.JSONObjectResponseHandler;
@@ -16,10 +12,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
     public ListView mListView;
@@ -62,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                newsAdapter = new NewsAdapter(MainActivity.this, dataList);
+                newsAdapter = new NewsAdapter(MainActivity.this, dataList, mListView);
                 mListView.setAdapter(newsAdapter);
             }
         });
