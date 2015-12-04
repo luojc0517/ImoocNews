@@ -30,6 +30,7 @@ public class NewsAdapter extends BaseAdapter implements AbsListView.OnScrollList
     private int mStart, mEnd;
     private String[] urls;
     private ListView listView;
+    private boolean isFistLaunch;
 
     public NewsAdapter(Context context, List<NewsBean> data, ListView listView) {
         this.context = context;
@@ -41,6 +42,7 @@ public class NewsAdapter extends BaseAdapter implements AbsListView.OnScrollList
             urls[i] = data.get(i).getNewsUrl();
         }
         listView.setOnScrollListener(this);
+        isFistLaunch = true;
     }
 
     @Override
@@ -104,6 +106,14 @@ public class NewsAdapter extends BaseAdapter implements AbsListView.OnScrollList
     public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
         mStart = firstVisibleItem;
         mEnd = mStart + visibleItemCount;
+        if (isFistLaunch == true && visibleItemCount > 0) {
+            for (int i = mStart; i < mEnd; i++) {
+                String url = urls[i];
+                ImageView imageView = (ImageView) listView.findViewWithTag(url);
+                imageLoader.loadImage(imageView, url);
+            }
+            isFistLaunch = false;
+        }
     }
 
     class ViewHolder {
